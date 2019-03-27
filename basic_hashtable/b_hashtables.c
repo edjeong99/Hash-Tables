@@ -110,7 +110,12 @@ void hash_table_insert(BasicHashTable *ht, char *key, char *value)
  ****/
 void hash_table_remove(BasicHashTable *ht, char *key)
 {
-
+   // get hash table index
+  unsigned int hash_index = hash(key, ht->capacity);
+ 
+ if(ht->storage[hash_index]){
+    destroy_pair(ht->storage[hash_index]);
+   }
 }
 
 /****
@@ -120,6 +125,12 @@ void hash_table_remove(BasicHashTable *ht, char *key)
  ****/
 char *hash_table_retrieve(BasicHashTable *ht, char *key)
 {
+   // get hash table index
+  unsigned int hash_index = hash(key, ht->capacity);
+
+  if(ht->storage[hash_index] && strcmp(ht->storage[hash_index]->key, key) == 0 ){
+    return ht->storage[hash_index]->value;
+   }
   return NULL;
 }
 
@@ -140,11 +151,11 @@ int main(void)
   struct BasicHashTable *ht = create_hash_table(16);
 
   hash_table_insert(ht, "line", "Here today...\n");
-printf("insert completed\n");
-  // printf("%s", hash_table_retrieve(ht, "line"));
+// printf("insert completed\n");
+   printf("%s", hash_table_retrieve(ht, "line"));
 
-  // hash_table_remove(ht, "line");
-
+   hash_table_remove(ht, "line");
+printf("remove completed\n");
   // if (hash_table_retrieve(ht, "line") == NULL) {
   //   printf("...gone tomorrow. (success)\n");
   // } else {

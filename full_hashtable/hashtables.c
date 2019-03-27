@@ -73,9 +73,15 @@ unsigned int hash(char *str, int max)
  */
 HashTable *create_hash_table(int capacity)
 {
-  HashTable *ht;
+ 
+  HashTable *ht = malloc(sizeof(HashTable));
 
+  ht->capacity = capacity;
+
+// not sure about what should be in sizeof ...
+  ht->storage = calloc(capacity, sizeof(LinkedPair*));
   return ht;
+ 
 }
 
 /*
@@ -89,7 +95,36 @@ HashTable *create_hash_table(int capacity)
  */
 void hash_table_insert(HashTable *ht, char *key, char *value)
 {
+// create a new pair
+ LinkedPair *new_pair = create_pair(key, value);
+ // get hash table index
+ unsigned int hash_index = hash(key, ht->capacity);
 
+ // keep track of where you are in link by using current_pair
+ LinkedPair *current_pair = ht->storage[hash_index];
+ 
+ // if the hash_index doesn't have any element
+ if(current_pair == NULL){
+   ht->storage[hash_index] = new_pair;
+ printf("inserted %s\n", ht->storage[hash_index]->value);
+ 
+   return;
+ }
+ 
+ // move to next pair until reaching last element or found a pair with matching key
+  while(current_pair->next &&strcmp(ht->storage[hash_index]->key, key) != 0 ){
+    current_pair = current_pair->next;
+   }
+
+// if last element is reached, add new pair to last link.
+  if(current_pair->next == NULL){   
+    current_pair->next = new_pair;
+  }
+  else{  // if matching key is found, replace value
+    current_pair->value = value;
+  }
+  printf("inserted 2nd %s\n", ht->storage[hash_index]->value);
+ 
 }
 
 /*
@@ -157,13 +192,13 @@ int main(void)
   printf("%s", hash_table_retrieve(ht, "line_2"));
   printf("%s", hash_table_retrieve(ht, "line_3"));
 
-  int old_capacity = ht->capacity;
-  ht = hash_table_resize(ht);
-  int new_capacity = ht->capacity;
+  // int old_capacity = ht->capacity;
+  // ht = hash_table_resize(ht);
+  // int new_capacity = ht->capacity;
 
-  printf("\nResizing hash table from %d to %d.\n", old_capacity, new_capacity);
+  // printf("\nResizing hash table from %d to %d.\n", old_capacity, new_capacity);
 
-  destroy_hash_table(ht);
+  // destroy_hash_table(ht);
 
   return 0;
 }

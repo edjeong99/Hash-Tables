@@ -141,6 +141,17 @@ char *hash_table_retrieve(BasicHashTable *ht, char *key)
  ****/
 void destroy_hash_table(BasicHashTable *ht)
 {
+// free all Pair
+for(int i =0; i < ht->capacity; i++){
+  if(ht->storage[i]){
+    destroy_hash_table(ht->storage[i]);
+  }
+}
+
+//free storage
+free(ht->storage);
+// free hash table
+free(ht);
 
 }
 
@@ -155,14 +166,14 @@ int main(void)
    printf("%s", hash_table_retrieve(ht, "line"));
 
    hash_table_remove(ht, "line");
-printf("remove completed\n");
-  // if (hash_table_retrieve(ht, "line") == NULL) {
-  //   printf("...gone tomorrow. (success)\n");
-  // } else {
-  //   fprintf(stderr, "ERROR: STILL HERE\n");
-  // }
+// printf("remove completed\n");
+  if (hash_table_retrieve(ht, "line") == NULL) {
+    printf("...gone tomorrow. (success)\n");
+  } else {
+    fprintf(stderr, "ERROR: STILL HERE\n");
+  }
 
-  // destroy_hash_table(ht);
+  destroy_hash_table(ht);
 
   return 0;
 }

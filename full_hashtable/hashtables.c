@@ -106,7 +106,7 @@ void hash_table_insert(HashTable *ht, char *key, char *value)
  // if the hash_index doesn't have any element
  if(current_pair == NULL){
    ht->storage[hash_index] = new_pair;
- printf("inserted %s\n", ht->storage[hash_index]->value);
+ printf("inserted : %s\n", ht->storage[hash_index]->value);
  
    return;
  }
@@ -137,9 +137,36 @@ void hash_table_insert(HashTable *ht, char *key, char *value)
  */
 void hash_table_remove(HashTable *ht, char *key)
 {
+  unsigned int hash_index = hash(key, ht->capacity);
+ 
+  LinkedPair *current_pair = ht->storage[hash_index];
+  LinkedPair *prev_pair= ht->storage[hash_index];
 
+  // if ht index doesn't have any element
+  if(!current_pair){
+    printf("ht remove - no element in ht index\n");
+    return;
+  }
+
+  // if 1st element in link match the key
+  if(strcmp(current_pair->key, key) == 0){
+    destroy_pair(current_pair);
+    ht->storage[hash_index] = NULL;
+    return;
+  }
+
+// check 2nd element till end of link
+current_pair = current_pair->next;
+while(current_pair){
+  if(strcmp(current_pair->key, key) == 0){
+    prev_pair->next = current_pair->next;
+    destroy_pair(current_pair);
+  }
+  // move prev/current pair to next link element
+  prev_pair = prev_pair->next;
+  current_pair = current_pair->next;
 }
-
+}
 /*
   Fill this in.
 
@@ -150,6 +177,17 @@ void hash_table_remove(HashTable *ht, char *key)
  */
 char *hash_table_retrieve(HashTable *ht, char *key)
 {
+  unsigned int hash_index = hash(key, ht->capacity);
+ 
+  LinkedPair *current_pair = ht->storage[hash_index];
+
+ while(current_pair){
+  if(strcmp(current_pair->key, key) == 0){
+ //   printf("retrieve  value = %s\n",current_pair->value );
+    return current_pair->value;
+  }
+  current_pair = current_pair->next;
+ }
   return NULL;
 }
 

@@ -198,6 +198,24 @@ char *hash_table_retrieve(HashTable *ht, char *key)
  */
 void destroy_hash_table(HashTable *ht)
 {
+    LinkedPair *current_pair;
+    LinkedPair *prev_pair;
+    unsigned int hash_index ;
+// free all Pair
+for(int i =0; i < ht->capacity; i++){
+  current_pair = ht->storage[i];
+  
+  if(current_pair){
+    prev_pair = current_pair;
+    current_pair = current_pair->next;
+    destroy_pair(prev_pair);
+  }
+}
+
+//free storage
+free(ht->storage);
+// free hash table
+free(ht);
 
 }
 
@@ -211,8 +229,23 @@ void destroy_hash_table(HashTable *ht)
  */
 HashTable *hash_table_resize(HashTable *ht)
 {
-  HashTable *new_ht;
+  HashTable *new_ht = malloc(sizeof(HashTable));
+  new_ht->capacity = 2 * ht->capacity;
+  // create 2x size for storage 
+  new_ht->storage = calloc(new_ht->capacity, sizeof(LinkedPair*));
+  
+   LinkedPair *current_pair;
 
+  // copy all elements
+  for (int i = 0; i < ht->capacity; i++){
+    current_pair = ht->storage[i];
+    while(current_pair){
+      hash_table_insert(new_ht, current_pair->key, current_pair->value );
+      current_pair = current_pair->next;
+    }
+  }
+
+  destroy_hash_table(ht);
   return new_ht;
 }
 
@@ -230,13 +263,13 @@ int main(void)
   printf("%s", hash_table_retrieve(ht, "line_2"));
   printf("%s", hash_table_retrieve(ht, "line_3"));
 
-  // int old_capacity = ht->capacity;
-  // ht = hash_table_resize(ht);
-  // int new_capacity = ht->capacity;
+  int old_capacity = ht->capacity;
+  ht = hash_table_resize(ht);
+  int new_capacity = ht->capacity;
 
-  // printf("\nResizing hash table from %d to %d.\n", old_capacity, new_capacity);
+  printf("\nResizing hash table from %d to %d.\n", old_capacity, new_capacity);
 
-  // destroy_hash_table(ht);
+  destroy_hash_table(ht);
 
   return 0;
 }

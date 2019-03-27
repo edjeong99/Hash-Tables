@@ -100,30 +100,34 @@ void hash_table_insert(HashTable *ht, char *key, char *value)
  // get hash table index
  unsigned int hash_index = hash(key, ht->capacity);
 
- // keep track of where you are in link by using current_pair
- LinkedPair *current_pair = ht->storage[hash_index];
  
  // if the hash_index doesn't have any element
- if(current_pair == NULL){
+ if(ht->storage[hash_index] == NULL){
    ht->storage[hash_index] = new_pair;
- printf("inserted : %s\n", ht->storage[hash_index]->value);
+ printf("inserted 1st : %s\n", ht->storage[hash_index]->value);
  
    return;
  }
+
+//printf("inserted before While :\n");
  
+ // keep track of where you are in link by using current_pair
+ LinkedPair *current_pair = ht->storage[hash_index];
+ LinkedPair *prev_pair = NULL;
  // move to next pair until reaching last element or found a pair with matching key
-  while(current_pair->next &&strcmp(ht->storage[hash_index]->key, key) != 0 ){
+  while(current_pair && strcmp(current_pair->key, key) != 0 ){
+    prev_pair = current_pair;
     current_pair = current_pair->next;
    }
 
 // if last element is reached, add new pair to last link.
-  if(current_pair->next == NULL){   
-    current_pair->next = new_pair;
+  if(current_pair == NULL){   
+    current_pair = new_pair;
   }
   else{  // if matching key is found, replace value
     current_pair->value = value;
   }
-  printf("inserted 2nd %s\n", ht->storage[hash_index]->value);
+  printf("inserted 2nd %s\n", current_pair->value);
  
 }
 

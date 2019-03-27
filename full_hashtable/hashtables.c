@@ -78,7 +78,7 @@ HashTable *create_hash_table(int capacity)
 
   ht->capacity = capacity;
 
-// not sure about what should be in sizeof ...
+
   ht->storage = calloc(capacity, sizeof(LinkedPair*));
   return ht;
  
@@ -112,6 +112,7 @@ void hash_table_insert(HashTable *ht, char *key, char *value)
  
  // keep track of where you are in link by using current_pair
  LinkedPair *current_pair = ht->storage[hash_index];
+
 // if first element match key
 if(strcmp(current_pair->key, key) == 0 ){
      current_pair->value = value;
@@ -211,10 +212,10 @@ void destroy_hash_table(HashTable *ht)
     LinkedPair *prev_pair;
     unsigned int hash_index ;
 // free all Pair
-for(int i =0; i < ht->capacity; i++){
+for(int i =0; i < ht->capacity; i++){// for each index
   current_pair = ht->storage[i];
   
-  if(current_pair){
+  if(current_pair){ // go through pair until reach NULL
     prev_pair = current_pair;
     current_pair = current_pair->next;
     destroy_pair(prev_pair);
@@ -246,15 +247,15 @@ HashTable *hash_table_resize(HashTable *ht)
    LinkedPair *current_pair;
 
   // copy all elements
-  for (int i = 0; i < ht->capacity; i++){
+  for (int i = 0; i < ht->capacity; i++){  // for each index
     current_pair = ht->storage[i];
-    while(current_pair){
+    while(current_pair){ // go through all Pair in that index
       hash_table_insert(new_ht, current_pair->key, current_pair->value );
       current_pair = current_pair->next;
     }
   }
 
-  destroy_hash_table(ht);
+  destroy_hash_table(ht); // remove old ht
   return new_ht;
 }
 

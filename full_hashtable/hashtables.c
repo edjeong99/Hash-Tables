@@ -109,25 +109,30 @@ void hash_table_insert(HashTable *ht, char *key, char *value)
    return;
  }
 
-//printf("inserted before While :\n");
  
  // keep track of where you are in link by using current_pair
  LinkedPair *current_pair = ht->storage[hash_index];
- LinkedPair *prev_pair = NULL;
+// if first element match key
+if(strcmp(current_pair->key, key) == 0 ){
+     current_pair->value = value;
+ printf("inserted edit 1st element : %s\n", current_pair->value);
+ 
+   return;
+ }
+
  // move to next pair until reaching last element or found a pair with matching key
-  while(current_pair && strcmp(current_pair->key, key) != 0 ){
-    prev_pair = current_pair;
+  while(current_pair->next && strcmp(current_pair->next->key, key) != 0 ){
     current_pair = current_pair->next;
    }
 
 // if last element is reached, add new pair to last link.
-  if(current_pair == NULL){   
-    current_pair = new_pair;
+  if(current_pair->next == NULL){   
+    current_pair->next = new_pair;
   }
   else{  // if matching key is found, replace value
-    current_pair->value = value;
+    current_pair->next->value = value;
   }
-  printf("inserted 2nd %s\n", current_pair->value);
+  printf("inserted 3rd %s\n", current_pair->next->value);
  
 }
 
@@ -187,7 +192,7 @@ char *hash_table_retrieve(HashTable *ht, char *key)
 
  while(current_pair){
   if(strcmp(current_pair->key, key) == 0){
- //   printf("retrieve  value = %s\n",current_pair->value );
+    printf("retrieve  value = %s\n",current_pair->value );
     return current_pair->value;
   }
   current_pair = current_pair->next;
